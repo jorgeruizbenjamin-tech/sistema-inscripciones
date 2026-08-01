@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: sis-academico-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: PGHOST
+        fromDatabase:
+          name: sis-academico-db
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: sis-academico-db
+          property: port
+      - key: PGDATABASE
+        fromDatabase:
+          name: sis-academico-db
+          property: database
+      - key: PGUSER
+        fromDatabase:
+          name: sis-academico-db
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: sis-academico-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: CORS_ORIGIN
+        value: "*"
+
+  - type: web
+    name: sis-academico-frontend
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+
+databases:
+  - name: sis-academico-db
+    plan: free
+    databaseName: sis_academico
+    user: sis_admin
