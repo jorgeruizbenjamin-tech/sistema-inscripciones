@@ -169,9 +169,15 @@ CREATE TABLE inscripcion (
     id_grupo          INT NOT NULL REFERENCES grupo(id_grupo),
     fecha_inscripcion TIMESTAMP NOT NULL DEFAULT now(),
     estado            VARCHAR(20) NOT NULL DEFAULT 'inscrito'
-        CHECK (estado IN ('inscrito','retirado')),
-    UNIQUE (cod_siss, id_grupo)
+        CHECK (estado IN ('inscrito','retirado'))
 );
+
+-- Solo puede haber UNA inscripción "activa" (inscrito) por estudiante/grupo.
+-- Si se retira, la fila queda con estado='retirado' y sí puede volver a
+-- inscribirse más adelante sin chocar con esta restricción.
+CREATE UNIQUE INDEX inscripcion_activa_unica
+    ON inscripcion (cod_siss, id_grupo)
+    WHERE estado = 'inscrito';
 
 -- Índices útiles
 CREATE INDEX idx_materia_carrera ON materia(id_carrera);
